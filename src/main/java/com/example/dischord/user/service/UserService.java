@@ -2,13 +2,13 @@ package com.example.dischord.user.service;
 
 
 import com.example.dischord.global.exception.BadRequestException;
-import com.example.dischord.global.exception.ExceptionCode;
+import com.example.dischord.global.exception.DuplicateException;
 import com.example.dischord.user.entity.User;
 import com.example.dischord.user.repository.UserRepository;
 import com.example.dischord.user.requestDto.UserSignupRequestDto;
 import com.example.dischord.user.responseDto.UserResponseDto;
-import com.example.dischord.user.responseDto.UserSignupResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -36,15 +36,23 @@ public class UserService {
 
     private void checkDuplicatedEmail(final String email) {
         if (userRepository.existsByEmail(email)) {
-            throw new BadRequestException(DUPLICATED_USER_EMAIL);
+            throw new DuplicateException(DUPLICATED_USER_EMAIL);
         }
     }
 
     public UserResponseDto getUser(Long userId) {
 
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdAndDeletedAtIsNull(userId)
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_USER_ID));
 
         return UserResponseDto.from(user);
+    }
+
+    public void deleteUser(Long userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_USER_ID));
+
+        userRepository.delete(user);
     }
 }
