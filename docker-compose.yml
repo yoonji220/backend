@@ -1,0 +1,15 @@
+services:
+  backend:
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /app
+    image: hunnit/dischord
+    environment:
+      SPRING_DATASOURCE_URL: ${RDS_URL}
+      SPRING_DATASOURCE_USERNAME: ${RDS_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${RDS_PASSWORD}
+    ports:
+      - "8080:8080"
+    restart: always
