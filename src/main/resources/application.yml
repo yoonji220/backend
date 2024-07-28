@@ -13,3 +13,5 @@ spring:
         generate_statistics: true
     hibernate:
       ddl-auto: update
+jwt:
+  secret: ${JWT_SECRET_KEY}

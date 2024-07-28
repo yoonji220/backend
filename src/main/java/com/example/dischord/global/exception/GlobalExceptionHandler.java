@@ -29,5 +29,24 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ApiResponse.error(e.getCode(), e.getMessage());
     }
 
+    // 추가된 부분: CustomException 예외 처리
+    @ExceptionHandler(CustomException.class)
+    public ApiResponse<ExceptionResponse> handleCustomException(final CustomException e) {
+        log.warn(e.getMessage(), e);
+        return ApiResponse.error(e.getCode().getCode(), e.getCode().getMessage());
+    }
 
+    // 추가된 부분: IllegalArgumentException 예외 처리
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ApiResponse<ExceptionResponse> handleIllegalArgumentException(final IllegalArgumentException e) {
+        log.warn(e.getMessage(), e);
+        return ApiResponse.error(ExceptionCode.INVALID_EMAIL_OR_PASSWORD.getCode(), e.getMessage());
+    }
+
+    // 추가된 부분: 모든 Exception 예외 처리
+    @ExceptionHandler(Exception.class)
+    public ApiResponse<ExceptionResponse> handleException(final Exception e) {
+        log.error("Internal Server Error: ", e);
+        return ApiResponse.error(ExceptionCode.TOKEN_NOT_FOUND.getCode(), "Internal Server Error");
+    }
 }
